@@ -1,8 +1,7 @@
-// ui.diary.FrameDiary.java
 package ui.diary;
 
 import domain.diary.controller.DiaryController;
-import ui.message.BirdMessageManager;
+import ui.component.BirdMessageManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,46 +9,38 @@ import java.time.LocalDate;
 
 public class FrameDiary extends JFrame {
 
-    private final DiaryController diaryController;
+    private final DiaryController controller;
     private final BirdMessageManager messageManager;
 
-    private JTextField titleField;
-    private JTextArea contentArea;
+    private final JTextField titleField = new JTextField();
+    private final JTextArea contentArea = new JTextArea();
 
-    public FrameDiary(DiaryController diaryController, BirdMessageManager messageManager) {
-        this.diaryController = diaryController;
+    public FrameDiary(DiaryController controller, BirdMessageManager messageManager) {
+        this.controller = controller;
         this.messageManager = messageManager;
 
         setTitle("일기 작성");
         setSize(400, 400);
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        initUI();
-        setVisible(true);
-    }
+        add(new JLabel("오늘 날짜: " + LocalDate.now(), SwingConstants.CENTER), BorderLayout.NORTH);
 
-    private void initUI() {
-        JLabel dateLabel = new JLabel("오늘 날짜: " + LocalDate.now());
-        dateLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        add(dateLabel, BorderLayout.NORTH);
+        titleField.setBorder(BorderFactory.createTitledBorder("제목"));
+        contentArea.setBorder(BorderFactory.createTitledBorder("내용"));
+        contentArea.setLineWrap(true);
 
         JPanel centerPanel = new JPanel(new BorderLayout());
-
-        titleField = new JTextField();
-        titleField.setBorder(BorderFactory.createTitledBorder("제목"));
         centerPanel.add(titleField, BorderLayout.NORTH);
-
-        contentArea = new JTextArea();
-        contentArea.setBorder(BorderFactory.createTitledBorder("내용"));
         centerPanel.add(new JScrollPane(contentArea), BorderLayout.CENTER);
-
         add(centerPanel, BorderLayout.CENTER);
 
-        JButton btnSave = new JButton("일기 저장");
-        btnSave.addActionListener(e -> saveDiary());
-        add(btnSave, BorderLayout.SOUTH);
+        JButton saveBtn = new JButton("저장");
+        saveBtn.addActionListener(e -> saveDiary());
+        add(saveBtn, BorderLayout.SOUTH);
+
+        setVisible(true);
     }
 
     private void saveDiary() {
@@ -61,12 +52,14 @@ public class FrameDiary extends JFrame {
             return;
         }
 
-        diaryController.saveWithWeather(LocalDate.now(), title, content);
-
-        messageManager.say("오늘 하루도 잘 기록했어요 😊");
-        messageManager.speakRandom();
-
-        JOptionPane.showMessageDialog(this, "일기가 저장되었습니다!");
-        dispose();
+        boolean saved = controller.save(LocalDate.now(), title, content);
+        if (saved) {
+            JOptionPane.showMessageDialog(this, "일기가 저장되었습니다.");
+            messageManager.say("오늘 하루도 잘 기록했어요!");
+            messageManager.speakRandom();
+            dispose();
+        } else {
+            JOptionPane.showMessageDialog(this, "이미 오늘 일기를 작성하셨습니다.");
+        }
     }
 }

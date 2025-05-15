@@ -1,9 +1,9 @@
-// domain.bird.model.Bird.java
 package domain.bird.model;
 
 import java.time.LocalDate;
 
 public class Bird {
+
     private final String id;
     private final String userId;
     private final BirdStage stage;
@@ -30,5 +30,13 @@ public class Bird {
 
     public Bird evolveTo(BirdStage nextStage) {
         return new Bird(id, userId, nextStage, 0, bornDate);
+    }
+
+    public boolean canEvolve() {
+        return stage.getNextStage() != null && point >= stage.getNeedPoint();
+    }
+
+    public static Bird createNew(String id, String userId) {
+        return new Bird(id, userId, BirdStage.EGG, 0, LocalDate.now());
     }
 }

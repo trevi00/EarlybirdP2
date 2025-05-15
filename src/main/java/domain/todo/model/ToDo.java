@@ -1,18 +1,16 @@
-// domain.todo.model.ToDo.java
 package domain.todo.model;
 
 import java.time.LocalDate;
 
 public class ToDo {
-    private final String id;
+
     private final String userId;
     private final LocalDate date;
     private final String title;
     private final String content;
     private final boolean done;
 
-    public ToDo(String id, String userId, LocalDate date, String title, String content, boolean done) {
-        this.id = id;
+    public ToDo(String userId, LocalDate date, String title, String content, boolean done) {
         this.userId = userId;
         this.date = date;
         this.title = title;
@@ -20,7 +18,6 @@ public class ToDo {
         this.done = done;
     }
 
-    public String getId() { return id; }
     public String getUserId() { return userId; }
     public LocalDate getDate() { return date; }
     public String getTitle() { return title; }
@@ -28,6 +25,6 @@ public class ToDo {
     public boolean isDone() { return done; }
 
     public ToDo markAsDone() {
-        return new ToDo(id, userId, date, title, content, true);
+        return new ToDo(userId, date, title, content, true);
     }
 }

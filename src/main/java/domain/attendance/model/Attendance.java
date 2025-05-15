@@ -1,9 +1,12 @@
-// domain.attendance.model.Attendance.java
 package domain.attendance.model;
 
 import java.time.LocalDate;
 
+/**
+ * 출석 기록 도메인 모델
+ */
 public class Attendance {
+
     private final String id;
     private final String userId;
     private final LocalDate date;

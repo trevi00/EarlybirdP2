@@ -1,27 +1,28 @@
-// domain.weather.service.DefaultWeatherService.java
 package domain.weather.service;
 
 import domain.weather.model.Weather;
-import infrastructure.cache.weather.WeatherCacheManager;
-import infrastructure.api.weather.WeatherFetcher;
+import domain.weather.repository.WeatherCacheRepository;
+import domain.weather.provider.WeatherProvider;
 
 public class DefaultWeatherService implements WeatherService {
 
-    private final WeatherCacheManager cacheManager;
-    private final WeatherFetcher fetcher;
+    private final WeatherCacheRepository cacheRepository;
+    private final WeatherProvider weatherProvider;
 
-    public DefaultWeatherService(WeatherCacheManager cacheManager, WeatherFetcher fetcher) {
-        this.cacheManager = cacheManager;
-        this.fetcher = fetcher;
+    public DefaultWeatherService(WeatherCacheRepository cacheRepository, WeatherProvider weatherProvider) {
+        this.cacheRepository = cacheRepository;
+        this.weatherProvider = weatherProvider;
     }
 
     @Override
-    public Weather getTodayWeather(String cityName) {
-        Weather cached = cacheManager.getTodayWeather(cityName);
+    public Weather getToday(String cityName) {
+        Weather cached = cacheRepository.getToday(cityName);
         if (cached != null) return cached;
 
-        Weather fetched = fetcher.fetchTodayWeather(cityName);
-        if (fetched != null) cacheManager.saveTodayWeather(cityName, fetched);
+        Weather fetched = weatherProvider.fetchToday(cityName);
+        if (fetched != null) {
+            cacheRepository.saveToday(cityName, fetched);
+        }
 
         return fetched;
     }

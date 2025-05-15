@@ -1,4 +1,3 @@
-// domain.diary.service.DefaultDiaryService.java
 package domain.diary.service;
 
 import domain.diary.model.Diary;
@@ -9,29 +8,29 @@ import java.util.List;
 
 public class DefaultDiaryService implements DiaryService {
 
-    private final DiaryRepository repo;
+    private final DiaryRepository repository;
 
-    public DefaultDiaryService(DiaryRepository repo) {
-        this.repo = repo;
+    public DefaultDiaryService(DiaryRepository repository) {
+        this.repository = repository;
     }
 
     @Override
-    public void saveDiary(Diary diary) {
-        repo.save(diary);
+    public void save(Diary diary) {
+        repository.save(diary);
     }
 
     @Override
-    public List<Diary> getAllDiaries(String username) {
-        return repo.findAllByUsername(username);
+    public List<Diary> findAll(String userId) {
+        return repository.findAllByUserId(userId);
     }
 
     @Override
-    public Diary getDiaryByDate(String username, LocalDate date) {
-        return repo.findByUsernameAndDate(username, date);
+    public Diary findByDate(String userId, LocalDate date) {
+        return repository.findByUserIdAndDate(userId, date);
     }
 
     @Override
-    public void deleteDiary(String username, LocalDate date) {
-        repo.deleteByUsernameAndDate(username, date);
+    public void delete(String userId, LocalDate date) {
+        repository.deleteByUserIdAndDate(userId, date);
     }
 }

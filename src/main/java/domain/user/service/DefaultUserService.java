@@ -1,4 +1,3 @@
-// domain.user.service.DefaultUserService.java
 package domain.user.service;
 
 import domain.user.model.User;
@@ -6,15 +5,15 @@ import domain.user.repository.UserRepository;
 
 public class DefaultUserService implements UserService {
 
-    private final UserRepository repo;
+    private final UserRepository repository;
 
-    public DefaultUserService(UserRepository repo) {
-        this.repo = repo;
+    public DefaultUserService(UserRepository repository) {
+        this.repository = repository;
     }
 
     @Override
     public User login(String username, String password) {
-        User user = repo.findByUsername(username);
+        User user = repository.findByUsername(username);
         if (user == null || !user.getPassword().equals(password)) {
             return null;
         }
@@ -23,13 +22,10 @@ public class DefaultUserService implements UserService {
 
     @Override
     public boolean register(String username, String password, String displayName) {
-        if (repo.existsByUsername(username)) return false;
-        repo.save(new User(username, password, displayName));
+        if (repository.existsByUsername(username)) {
+            return false;
+        }
+        repository.save(new User(username, password, displayName));
         return true;
-    }
-
-    @Override
-    public boolean exists(String username) {
-        return repo.existsByUsername(username);
     }
 }

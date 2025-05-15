@@ -1,4 +1,3 @@
-// ui.diary.FrameDiaryEdit.java
 package ui.diary;
 
 import domain.diary.controller.DiaryController;
@@ -10,79 +9,26 @@ import java.time.LocalDate;
 
 public class FrameDiaryEdit extends JFrame {
 
-    private final DiaryController diaryController;
+    private final DiaryController controller;
     private final LocalDate diaryDate;
 
-    private JTextField titleField;
-    private JTextField weatherField;
-    private JTextArea contentArea;
+    private final JTextField titleField = new JTextField();
+    private final JTextField weatherField = new JTextField();
+    private final JTextArea contentArea = new JTextArea();
 
-    public FrameDiaryEdit(DiaryController diaryController, LocalDate diaryDate) {
-        this.diaryController = diaryController;
+    public FrameDiaryEdit(DiaryController controller, LocalDate diaryDate) {
+        this.controller = controller;
         this.diaryDate = diaryDate;
 
         setTitle("일기 수정");
         setSize(500, 400);
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        initUI();
-        loadDiaryContent();
-        setVisible(true);
-    }
-
-    private void initUI() {
-        JLabel dateLabel = new JLabel("날짜: " + diaryDate, SwingConstants.CENTER);
-        dateLabel.setFont(new Font("Serif", Font.BOLD, 16));
-        add(dateLabel, BorderLayout.NORTH);
-
-        JPanel inputPanel = new JPanel(new BorderLayout());
-
-        titleField = new JTextField();
-        titleField.setBorder(BorderFactory.createTitledBorder("제목"));
-        inputPanel.add(titleField, BorderLayout.NORTH);
-
-        weatherField = new JTextField();
-        weatherField.setBorder(BorderFactory.createTitledBorder("날씨"));
-        inputPanel.add(weatherField, BorderLayout.CENTER);
-
-        contentArea = new JTextArea();
-        contentArea.setBorder(BorderFactory.createTitledBorder("내용"));
-        add(new JScrollPane(contentArea), BorderLayout.CENTER);
-
-        add(inputPanel, BorderLayout.WEST);
-
-        JPanel buttonPanel = new JPanel();
-        JButton btnSave = new JButton("저장");
-        JButton btnCancel = new JButton("취소");
-
-        buttonPanel.add(btnSave);
-        buttonPanel.add(btnCancel);
-        add(buttonPanel, BorderLayout.SOUTH);
-
-        btnSave.addActionListener(e -> {
-            String title = titleField.getText().trim();
-            String weather = weatherField.getText().trim();
-            String content = contentArea.getText().trim();
-
-            if (title.isEmpty() || content.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "제목과 내용을 모두 입력해주세요.");
-                return;
-            }
-
-            diaryController.save(diaryDate, weather, title, content);
-            JOptionPane.showMessageDialog(this, "일기가 수정되었습니다.");
-            dispose();
-        });
-
-        btnCancel.addActionListener(e -> dispose());
-    }
-
-    private void loadDiaryContent() {
-        Diary diary = diaryController.get(diaryDate);
+        Diary diary = controller.getByDate(diaryDate);
         if (diary == null) {
-            JOptionPane.showMessageDialog(this, "일기 내용을 불러올 수 없습니다.");
+            JOptionPane.showMessageDialog(this, "일기를 불러올 수 없습니다.");
             dispose();
             return;
         }
@@ -90,5 +36,34 @@ public class FrameDiaryEdit extends JFrame {
         titleField.setText(diary.getTitle());
         weatherField.setText(diary.getWeather());
         contentArea.setText(diary.getContent());
+
+        titleField.setBorder(BorderFactory.createTitledBorder("제목"));
+        weatherField.setBorder(BorderFactory.createTitledBorder("날씨"));
+        contentArea.setBorder(BorderFactory.createTitledBorder("내용"));
+
+        JPanel fields = new JPanel(new GridLayout(2, 1));
+        fields.add(titleField);
+        fields.add(weatherField);
+
+        add(new JLabel("날짜: " + diaryDate, SwingConstants.CENTER), BorderLayout.NORTH);
+        add(fields, BorderLayout.WEST);
+        add(new JScrollPane(contentArea), BorderLayout.CENTER);
+
+        JPanel btnPanel = new JPanel();
+        JButton save = new JButton("저장");
+        JButton cancel = new JButton("취소");
+        btnPanel.add(save);
+        btnPanel.add(cancel);
+        add(btnPanel, BorderLayout.SOUTH);
+
+        save.addActionListener(e -> {
+            controller.save(diaryDate, weatherField.getText(), titleField.getText(), contentArea.getText());
+            JOptionPane.showMessageDialog(this, "일기가 수정되었습니다.");
+            dispose();
+        });
+
+        cancel.addActionListener(e -> dispose());
+
+        setVisible(true);
     }
 }

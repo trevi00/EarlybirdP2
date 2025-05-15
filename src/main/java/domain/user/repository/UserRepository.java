@@ -1,4 +1,3 @@
-// domain.user.repository.UserRepository.java
 package domain.user.repository;
 
 import domain.user.model.User;

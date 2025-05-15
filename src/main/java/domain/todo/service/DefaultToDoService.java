@@ -1,8 +1,8 @@
-// domain.todo.service.DefaultToDoService.java
 package domain.todo.service;
 
 import domain.todo.model.ToDo;
 import domain.todo.repository.ToDoRepository;
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -15,27 +15,31 @@ public class DefaultToDoService implements ToDoService {
     }
 
     @Override
-    public boolean create(ToDo todo) {
-        if (repository.exists(todo.getUserId(), todo.getDate())) return false;
+    public boolean save(ToDo todo) {
+        if (repository.exists(todo.getUserId(), todo.getDate())) {
+            return false;
+        }
         repository.save(todo);
         return true;
     }
 
     @Override
-    public void markAsDone(String userId, LocalDate date) {
-        ToDo existing = repository.findByUserIdAndDate(userId, date);
-        if (existing != null && !existing.isDone()) {
-            repository.update(existing.markAsDone());
-        }
+    public ToDo getByDate(String userId, LocalDate date) {
+        return repository.findByDate(userId, date);
     }
 
     @Override
     public List<ToDo> getAll(String userId) {
-        return repository.findAllByUserId(userId);
+        return repository.findAll(userId);
     }
 
     @Override
     public void delete(String userId, LocalDate date) {
         repository.delete(userId, date);
+    }
+
+    @Override
+    public void markAsDone(String userId, LocalDate date) {
+        repository.markAsDone(userId, date);
     }
 }

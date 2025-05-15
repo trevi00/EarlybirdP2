@@ -1,4 +1,3 @@
-// domain.user.model.User.java
 package domain.user.model;
 
 public class User {
@@ -12,15 +11,7 @@ public class User {
         this.displayName = displayName;
     }
 
-    public String getUsername() {
-        return username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public String getDisplayName() {
-        return displayName;
-    }
+    public String getUsername() { return username; }
+    public String getPassword() { return password; }
+    public String getDisplayName() { return displayName; }
 }

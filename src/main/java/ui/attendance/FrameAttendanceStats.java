@@ -1,10 +1,6 @@
-// ui.attendance.FrameAttendanceStats.java
 package ui.attendance;
 
 import domain.attendance.controller.AttendanceController;
-import domain.attendance.service.AttendanceStatsService;
-import user.model.User;
-import user.session.SessionManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,47 +10,42 @@ import java.util.Set;
 
 public class FrameAttendanceStats extends JFrame {
 
-    private final AttendanceController attendanceController;
-    private final AttendanceStatsService statsService;
-    private final User user;
-
+    private final AttendanceController controller;
     private YearMonth selectedMonth;
-    private JPanel calendarContainer;
+    private JPanel calendarPanel;
     private JLabel lblSummary;
 
-    public FrameAttendanceStats(AttendanceController attendanceController) {
-        this.attendanceController = attendanceController;
-        this.statsService = attendanceController.getStatsService();
-        this.user = SessionManager.getCurrentUser();
+    public FrameAttendanceStats(AttendanceController controller) {
+        this.controller = controller;
         this.selectedMonth = YearMonth.now();
 
         setTitle("출석 통계");
         setSize(600, 500);
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
 
         initUI();
         updateCalendar();
+
         setVisible(true);
     }
 
     private void initUI() {
-        JPanel topPanel = new JPanel();
+        JPanel top = new JPanel();
         JButton btnPrev = new JButton("◀");
         JButton btnNext = new JButton("▶");
         JLabel lblMonth = new JLabel(selectedMonth.toString(), SwingConstants.CENTER);
 
-        topPanel.add(btnPrev);
-        topPanel.add(lblMonth);
-        topPanel.add(btnNext);
-        add(topPanel, BorderLayout.NORTH);
+        top.add(btnPrev);
+        top.add(lblMonth);
+        top.add(btnNext);
+        add(top, BorderLayout.NORTH);
 
-        calendarContainer = new JPanel(new BorderLayout());
-        add(calendarContainer, BorderLayout.CENTER);
+        calendarPanel = new JPanel();
+        add(calendarPanel, BorderLayout.CENTER);
 
         lblSummary = new JLabel("", SwingConstants.CENTER);
-        lblSummary.setFont(new Font("Serif", Font.BOLD, 14));
         add(lblSummary, BorderLayout.SOUTH);
 
         btnPrev.addActionListener(e -> {
@@ -71,17 +62,16 @@ public class FrameAttendanceStats extends JFrame {
     }
 
     private void updateCalendar() {
-        calendarContainer.removeAll();
+        calendarPanel.removeAll();
 
-        Set<LocalDate> days = statsService.getAttendanceDaysInMonth(user.getUsername(), selectedMonth);
+        Set<LocalDate> days = controller.getAttendanceDaysIn(selectedMonth);
         CalendarPanel panel = new CalendarPanel(selectedMonth, days);
-        calendarContainer.add(panel, BorderLayout.CENTER);
+        calendarPanel.setLayout(new BorderLayout());
+        calendarPanel.add(panel, BorderLayout.CENTER);
 
-        int attended = days.size();
-        int total = selectedMonth.lengthOfMonth();
-        lblSummary.setText(String.format("출석일수: %d / %d (출석률 %.1f%%)", attended, total, (attended * 100.0 / total)));
+        lblSummary.setText(String.format("출석일수: %d일 / %d일", days.size(), selectedMonth.lengthOfMonth()));
 
-        calendarContainer.revalidate();
-        calendarContainer.repaint();
+        calendarPanel.revalidate();
+        calendarPanel.repaint();
     }
 }
